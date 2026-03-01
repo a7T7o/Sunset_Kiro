@@ -2,30 +2,45 @@
 inclusion: manual
 priority: P3
 keywords: [项目结构, 文件夹, 命名规范, 场景结构]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-02-11
 archivedFrom: .kiro/steering/structure.md
-archivedDate: 2025-01-09
+archivedDate: 2026-01-09
 ---
 
 ## 中文概述（面向开发者本人）
 
-- **最后更新**：2025-01-09
+- **最后更新**：2026-02-11
 - **根目录结构**：
   - `Assets/` - Unity 资源（脚本、精灵、预制体、场景）
   - `Docx/` - 设计文档和技术方案
   - `Packages/` - 包清单
   - `ProjectSettings/` - Unity 项目设置
-- **脚本组织**（`Assets/Scripts/`）：
-  - `Service/` - 核心管理器和服务
-  - `Controller/Player/` - 玩家移动和输入
-  - `Data/` - 数据结构（物品、配方、枚举）
-  - `Farm/` - 农田系统
-  - `UI/` - 所有 UI 组件
-  - `World/` - 世界物体（拾取物、生成器）
+- **脚本组织**（`Assets/YYY_Scripts/`）：
+  - `Anim/` - 动画控制（Player、NPC）
+  - `Combat/` - 战斗系统（命中检测、资源节点注册）
+  - `Controller/` - 控制器（Player、NPC、Input、TreeController、StoneController）
+  - `Core/` - 核心框架（Events、Pool、Services）
+  - `Data/` - 数据结构（Items、Database、Enums、Recipes、Core）
+  - `Effects/` - 特效（落叶等）
+  - `Events/` - 事件定义（PlacementEvents、ToolEvents）
+  - `Farm/` - 农田系统（FarmTileManager、CropController 等）
+  - `Interfaces/` - 接口定义（IInteractable、IResourceNode）
+  - `Service/` - 核心服务（Camera、Crafting、Equipment、Inventory、Navigation、Placement、Player、Rendering）
+  - `UI/` - UI 组件（Box、Crafting、Debug、Inventory、Tabs、Toolbar、Utility）
   - `Utils/` - 工具类和扩展
+  - `World/` - 世界物体（Placeable、拾取物、生成器）
+- **其他资源目录**：
+  - `Assets/000_Scenes/` - 场景文件
+  - `Assets/100_Anim/` + `Assets/100_Animations/` - 动画资源
+  - `Assets/111_Data/` - SO 数据资源（Database、Items、Recipes、Drop Table）
+  - `Assets/222_Prefabs/` - 预制体（Box、Farm、Tree、Rock、UI 等）
+  - `Assets/444_Shaders/` - 着色器和材质
+  - `Assets/Editor/` - 编辑器工具脚本
+  - `Assets/Sprites/` - 精灵图资源
+  - `Assets/Scripts/Utils/` - 旧工具类（部分保留）
 - **命名规范**：
   - 类名：PascalCase（如 `TimeManager`）
-  - 私有字段：camelCase（如 `currentTime`）
+  - 私有字段：_camelCase（如 `_currentTime`）
   - 常量：UPPER_CASE（如 `MAX_HEALTH`）
   - GameObject：PascalCase + 下划线（如 `Tree_M1_00`）
 
@@ -52,74 +67,91 @@ Sunset/
 
 ## Assets Organization
 
-### Scripts (`Assets/Scripts/`)
+### Scripts (`Assets/YYY_Scripts/`)
 
-**Core Systems**:
+**Core Framework**:
+- `Core/Events/` - Event system (EventBus)
+- `Core/Pool/` - Object pooling
+- `Core/Services/` - Service locator
+
+**Services**:
 - `Service/` - Core managers and services
-  - `TimeManager.cs` - Time and day/night cycle
-  - `SeasonManager.cs` - Season management
-  - `WeatherSystem.cs` - Weather effects
-  - `DynamicSortingOrder.cs` - Sprite sorting
+  - `TimeManager.cs`, `SeasonManager.cs`, `WeatherSystem.cs`
+  - `Camera/` - Camera system
+  - `Crafting/` - Crafting system
+  - `Equipment/` - Equipment system
+  - `Inventory/` - Inventory service and bootstrap
+  - `Navigation/` - NavGrid2D pathfinding
+  - `NPC/` - NPC services
+  - `Placement/` - Placement system (Manager, Preview, Validator, GridCalculator, Navigator, LayerDetector)
+  - `Player/` - Player services (AutoNavigator)
+  - `Rendering/` - Rendering utilities
+  - `PersistentManagers.cs` - Manager persistence
 
-**Player**:
+**Controllers**:
 - `Controller/Player/` - Player movement and input
+- `Controller/Input/` - GameInputManager
+- `Controller/NPC/` - NPC controllers
+- `Controller/TreeController.cs`, `StoneController.cs`, `RockController.cs`
+
+**Animation**:
 - `Anim/Player/` - Player animation controllers
+- `Anim/NPC/` - NPC animation controllers
 
 **Game Systems**:
-- `Data/` - Data structures (items, recipes, enums)
-  - `Items/` - Item ScriptableObjects
+- `Data/` - Data structures
+  - `Items/` - ItemData, ToolData, WeaponData, SeedData, CropData
   - `Database/` - Item database
+  - `Enums/` - Enum definitions
   - `Recipes/` - Crafting recipes
-- `Farm/` - Farming system (crops, tilling, watering)
-- `UI/` - All UI components
-  - `Inventory/` - Inventory UI
-  - `Tabs/` - Tab panel management
-  - `Toolbar/` - Quick toolbar
-- `World/` - World objects (pickups, spawning)
+  - `Core/` - SaveDataDTOs, DynamicObjectFactory, PersistentObjectRegistry, InventoryItem
+- `Farm/` - Farming system (FarmTileManager, CropController, CropManager, FarmlandBorderManager, FarmToolPreview, SeedBagHelper)
+- `Combat/` - Combat system (PlayerToolHitEmitter, ResourceNodeRegistry)
+- `Effects/` - Visual effects (LeafFallEffect, LeafSpawner)
+- `Events/` - Event definitions (PlacementEvents, ToolEvents)
+- `UI/` - UI components (Box, Crafting, Debug, Inventory, Tabs, Toolbar, Utility)
+- `World/` - World objects (Placeable/ChestController, WorldItemPickup, WorldItemDrop, WorldItemPool, WorldSpawnService)
+- `Interfaces/` - IInteractable, IResourceNode
 
 **Utilities**:
-- `Utils/` - Helper classes and extensions
-- `Service/Navigation/` - A* pathfinding system
-- `Service/Rendering/` - Rendering utilities
+- `Utils/` - Helper classes, Attributes, Editor tools
 
 ### Sprites (`Assets/Sprites/`)
 
 ```
 Sprites/
-├── Anim/           # Animation sprite sheets
-├── House/          # Building sprites
-├── Sheet/          # Sprite sheets
-├── UI/             # UI icons and elements
-├── Generated/      # Auto-generated sprites
-└── Pivot_Example/  # Pivot alignment examples
+├── 0_Tool & Weapon 'Anim/  # Tool/weapon animation sprites
+├── Equipments/             # Equipment sprites
+├── Farm/                   # Farming sprites
+├── Generated/              # Auto-generated sprites
+├── House/                  # Building sprites
+├── Props/                  # World prop sprites
+├── Shadow_WorldPrefab/     # Shadow sprites for world prefabs
+└── UI/                     # UI icons and elements
 ```
 
-### Prefabs (`Assets/Prefabs/`)
+### Prefabs (`Assets/222_Prefabs/`)
 
 ```
-Prefabs/
-├── Farm/           # Farming-related prefabs
-├── Tree/           # Tree prefabs (with growth stages)
-├── Rock/           # Rock and mineral prefabs
-├── House/          # Building prefabs
-├── UI/             # UI panel prefabs
-└── Dungeon props/  # Dungeon/combat props
+222_Prefabs/
+├── 000_Temp/          # Temporary prefabs
+├── Box/               # Chest/box prefabs
+├── Dungeon props/     # Dungeon/combat props
+├── Farm/              # Farming-related prefabs
+├── House/             # Building prefabs
+├── Pan/               # Pan prefabs
+├── Rock/              # Rock and mineral prefabs
+├── Tree/              # Tree prefabs (with growth stages)
+├── UI/                # UI panel prefabs
+└── WorldItems/        # World item prefabs
 ```
 
-### Animations (`Assets/Animations/`)
+### Data (`Assets/111_Data/`)
 
 ```
-Animations/
-├── 0/              # Base animations
-├── Controller/     # Animation controllers
-└── Type/           # Animation types/categories
-```
-
-### Data (`Assets/Data/`)
-
-```
-Data/
+111_Data/
 ├── Database/       # ScriptableObject databases
+├── Drop Table/     # Drop table data
 ├── Items/          # Item data assets
 └── Recipes/        # Recipe data assets
 ```
@@ -132,14 +164,11 @@ Custom editor scripts for workflow automation:
 - Tilemap utilities
 - Debug visualizers
 
-## Documentation (`Docx/`)
+## File Structure
 
 ```
-Docx/
-├── Plan/           # Design documents
-├── Solutions/      # Technical solution documents
-├── Summary/        # Phase completion reports
-└── HD/             # Handoff documents
+Assets/Scripts/Utils/       # Legacy utils (partially retained)
+Assets/YYY_Scripts/         # Main scripts directory
 ```
 
 ## Naming Conventions

@@ -203,6 +203,35 @@
 | `Assets/YYY_Scripts/UI/Box/BoxPanelUI.cs` | 箱子 UI 面板 |
 | `Assets/YYY_Scripts/Service/Inventory/ChestInventory.cs` | 箱子库存类（新增） |
 
+---
+
+## 关键文件索引（2026-02-06 更新）
+
+### 核心脚本（修改/新增）
+| 文件 | 操作 | 涉及子工作区 | 说明 |
+|------|------|-------------|------|
+| `ChestController.cs` | 多次修改 | 0, 1, 2, 14-17 | 箱子控制器，Sprite 底部对齐、Collider 同步 |
+| `ChestDropHandler.cs` | 修改 | 0, 16 | 掉落处理器，支持指定父物体 |
+| `ChestInventory.cs` | 新增 | 14 | 箱子库存类，提供事件系统 |
+| `BoxPanelUI.cs` | 多次重写 | 14-17 | 箱子 UI 面板，双区域布局 |
+| `StorageData.cs` | 修改 | 1, 15 | 新增 boxUiPrefab 字段 |
+| `KeyLockData.cs` | 新增 | 0 | 钥匙/锁数据 |
+
+### 相关文件（引用/依赖）
+| 文件 | 关系 |
+|------|------|
+| `PackagePanelTabsUI.cs` | UI 互斥逻辑、OpenBoxUI/CloseBoxUI |
+| `InventorySlotUI.cs` | 槽位 UI 组件 |
+| `InventoryInteractionManager.cs` | 拖拽交互管理 |
+| `GameInputManager.cs` | 交互入口、导航距离检测 |
+| `PlayerAutoNavigator.cs` | 导航系统集成 |
+| `NavGrid2D.cs` | 导航网格刷新联动 |
+
+### 编辑器工具
+| 文件 | 说明 |
+|------|------|
+| 无专用编辑器 | - |
+
 
 ### 会话 20 - 2026-01-18
 - 内容：锐评修复 V3 - 修复 5 个严重问题

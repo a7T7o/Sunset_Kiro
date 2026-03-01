@@ -2,7 +2,7 @@
 inclusion: manual
 priority: P1
 keywords: [动画, 工具, 同步, 帧, Animator, Animation]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 ---
 
 # 动画系统规范

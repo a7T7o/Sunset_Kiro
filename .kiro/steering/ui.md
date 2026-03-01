@@ -2,7 +2,7 @@
 inclusion: manual
 priority: P1
 keywords: [UI, 面板, 快捷键, Toggle, 工具栏, PackagePanel]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 ---
 
 # UI 系统规范

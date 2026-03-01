@@ -2,7 +2,7 @@
 inclusion: manual
 priority: P1
 keywords: [放置, 可放置, 树苗, 箱子, 工作台, 底部对齐, Collider, 预制体]
-lastUpdated: 2026-01-21
+lastUpdated: 2026-02-11
 ---
 
 # 可放置物品开发规范
@@ -116,12 +116,47 @@ private void UpdateSpriteState(Sprite newSprite)
 
 ---
 
-## 六、参考实现
+## 六、农田放置规范（多格放置）
 
-- **TreeControllerV2.cs** - 完全合规的参考实现
+农田系统的放置逻辑与单物品放置不同，涉及多格 Tilemap 操作。
+
+### 核心组件
+
+| 组件 | 职责 |
+|------|------|
+| `FarmTileManager` | 农田 Tile 的增删改查，管理 Farmland Tilemap |
+| `PlacementGridCalculator` | 计算多格放置区域，处理网格对齐 |
+| `FarmlandBorderManager` | 耕地边界自动拼接（Rule Tile 逻辑） |
+
+### 与单物品放置的区别
+
+| 维度 | 单物品放置（树苗/箱子） | 农田放置 |
+|------|----------------------|---------|
+| 操作对象 | GameObject（Prefab 实例） | Tilemap Tile |
+| 放置单位 | 单格 | 可多格（由 PlacementGridCalculator 计算） |
+| 底部对齐 | 需要 AlignSpriteBottom | 不需要（Tile 自动对齐网格） |
+| 边界处理 | 无 | FarmlandBorderManager 自动拼接 |
+| NavGrid 刷新 | 放置后刷新 | 放置后刷新 |
+
+### 农田放置检查清单
+
+- [ ] 使用 `FarmTileManager` 操作 Farmland Tilemap
+- [ ] 通过 `PlacementGridCalculator` 计算放置区域
+- [ ] 放置后触发 `FarmlandBorderManager` 更新边界
+- [ ] 放置后刷新 NavGrid
+- [ ] 操作限定在当前楼层的 Tilemap（参考 `layers.md`）
+
+---
+
+## 七、参考实现
+
+- **TreeControllerV2.cs** - 单物品放置的合规参考
 - **ChestController.cs** - 需要修改以符合规范
+- **FarmTileManager.cs** - 农田 Tile 管理参考
+- **PlacementGridCalculator.cs** - 多格放置计算参考
 
 ---
 
 **文档维护者**: Kiro  
-**创建日期**: 2026-01-21
+**创建日期**: 2026-01-21  
+**最后更新**: 2026-02-11

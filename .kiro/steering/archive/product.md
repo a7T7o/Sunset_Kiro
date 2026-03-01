@@ -2,14 +2,14 @@
 inclusion: manual
 priority: P3
 keywords: [产品, 项目介绍, 概述]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 archivedFrom: .kiro/steering/product.md
-archivedDate: 2025-01-09
+archivedDate: 2026-01-09
 ---
 
 ## 中文概述（面向开发者本人）
 
-- **最后更新**：2025-01-09
+- **最后更新**：2026-01-09
 - **项目名称**：Sunset（日落）
 - **类型**：2D 农场模拟游戏（类星露谷）
 - **引擎**：Unity 6 (6000.0.62f1)

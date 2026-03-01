@@ -1,3 +1,10 @@
+---
+inclusion: manual
+priority: P2
+keywords: [日志, Debug, Log, 调试, 报错]
+lastUpdated: 2026-02-11
+---
+
 # 调试日志规范
 
 **创建日期**: 2026-01-17  

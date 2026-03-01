@@ -80,6 +80,46 @@
 
 ---
 
+## 关键文件索引（2026-02-06 更新）
+
+### 核心脚本（修改/新增）
+| 文件 | 操作 | 涉及子工作区 | 说明 |
+|------|------|-------------|------|
+| `InventoryInteractionManager.cs` | 新增 | 0 | 背包交互管理器（V2 版本） |
+| `HeldItemDisplay.cs` | 新增 | 0 | 跟随鼠标显示组件 |
+| `InventorySortService.cs` | 新增 | 0 | 背包整理服务 |
+| `InventorySlotUI.cs` | 修改 | 0, 13 | 添加 Index 属性 |
+| `EquipmentSlotUI.cs` | 修改 | 0 | 添加 Index 属性 |
+| `InventoryPanelUI.cs` | 修改 | 0, 12 | 修复 database 获取方式 |
+| `PackagePanelTabsUI.cs` | 修改 | 0, 16-18 | 添加 CancelInteractionIfNeeded |
+| `ToolbarSlotUI.cs` | 修改 | 16 | 添加面板检查 |
+| `UIItemIconScaler.cs` | 修改 | 0 | 图标缩放和旋转 |
+
+### 制作台相关（已抽离）
+| 文件 | 说明 |
+|------|------|
+| `CraftingService.cs` | 制作服务核心类 |
+| `CraftingPanel.cs` | 制作面板主容器 |
+| `RecipeSlotUI.cs` | 配方槽位 UI |
+| `RecipeDetailPanel.cs` | 配方详情面板 |
+| `MaterialItemUI.cs` | 材料项 UI |
+
+### 相关文件（引用/依赖）
+| 文件 | 关系 |
+|------|------|
+| `GameInputManager.cs` | 输入禁用检查 |
+| `PlacementManagerV3.cs` | 背包打开时隐藏预览 |
+| `WorldItemPickup.cs` | 拾取冷却支持 |
+| `WorldItemPool.cs` | 生成冷却参数 |
+| `AutoPickupService.cs` | 冷却检查 |
+
+### 编辑器工具
+| 文件 | 说明 |
+|------|------|
+| 无专用编辑器 | - |
+
+---
+
 ### 会话 2 - 2025-12-19
 
 **用户需求**:

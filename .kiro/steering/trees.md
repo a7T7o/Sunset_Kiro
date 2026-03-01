@@ -2,7 +2,7 @@
 inclusion: manual
 priority: P1
 keywords: [树木, 树林, 砍树, TreeController, 树桩, 生长阶段]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 ---
 
 # 树木系统规范

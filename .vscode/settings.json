@@ -1,0 +1,8 @@
+{
+  "claude-code.environmentVariables": {
+    "ANTHROPIC_BASE_URL": "http://localhost:8080",
+    "ANTHROPIC_API_KEY": "any"
+  },
+  "claude-code.selectedModel": "claude-sonnet-4",
+  "claudeCodeChat.permissions.yoloMode": true
+}

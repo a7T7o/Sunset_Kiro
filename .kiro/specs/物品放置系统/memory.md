@@ -69,6 +69,45 @@
 
 ---
 
+## 关键文件索引（2026-02-06 更新）
+
+### 核心脚本（修改/新增）
+| 文件 | 操作 | 涉及子工作区 | 说明 |
+|------|------|-------------|------|
+| `PlacementManagerV3.cs` | 新增 | 3 | V3 版本放置管理器 |
+| `PlacementValidatorV3.cs` | 新增 | 3 | V3 版本验证器 |
+| `PlacementPreviewV3.cs` | 新增 | 3 | V3 版本预览 UI |
+| `PlacementNavigator.cs` | 新增 | 3 | 导航和到达检测 |
+| `PlacementGridCalculator.cs` | 新增 | 3, 6 | 格子计算，Collider 中心对齐 |
+| `PlacementLayerDetector.cs` | 新增 | 3 | Layer 检测 |
+| `PlacementManager.cs` | 废弃 | 2 | V2 版本（已废弃） |
+| `PlacementPreview.cs` | 废弃 | 2 | V2 版本（已废弃） |
+| `PlacementValidator.cs` | 废弃 | 2 | V2 版本（已废弃） |
+
+### 可放置物品 SO
+| 文件 | 操作 | 说明 |
+|------|------|------|
+| `PlaceableItemData.cs` | 多次修改 | 可放置物品基类 |
+| `SaplingData.cs` | 修改 | 树苗数据 |
+| `StorageData.cs` | 修改 | 存储容器数据 |
+| `WorkstationData.cs` | 新增 | 工作台数据 |
+
+### 相关文件（引用/依赖）
+| 文件 | 关系 |
+|------|------|
+| `GameInputManager.cs` | 放置入口、快照机制 |
+| `InventoryService.cs` | 背包扣除 |
+| `TreeControllerV2.cs` | 树苗放置后的控制器 |
+| `ChestController.cs` | 箱子放置后的控制器 |
+| `NavGrid2D.cs` | 导航网格刷新 |
+
+### 编辑器工具
+| 文件 | 说明 |
+|------|------|
+| `PlaceableItemDataEditor.cs` | 可放置物品 SO 编辑器 |
+
+---
+
 ## 🔴 当前待解决问题
 
 ### 严重 Bug：导航中切换物品导致数据错乱

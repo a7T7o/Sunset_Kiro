@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "一键提交推送",
+  "description": "手动触发后自动完成：git add 所有更改 → 用日期编号格式（如 2026.02.21-02）作为 commit 消息提交 → push 到远程。编号根据当天已有提交数自动递增。",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "执行以下 git 提交推送流程，严格按步骤操作，不要询问用户任何问题：\n\n1. 先运行 `git log --oneline --after=\"$(Get-Date -Format yyyy-MM-dd)\" --before=\"$(Get-Date (Get-Date).AddDays(1) -Format yyyy-MM-dd)\"` 统计今天已有多少次提交，计算下一个编号（从 01 开始，已有 N 次则用 N+1，补零到两位）\n\n2. 生成 commit 消息，格式为：`YYYY.MM.DD-NN`（如 2026.02.21-02）\n\n3. 执行 `git add -A`\n\n4. 执行 `git commit -m \"生成的消息\"`\n\n5. 执行 `git push origin main`\n\n6. 完成后报告：提交消息是什么、push 是否成功\n\n注意：全程不要问用户任何确认，直接执行完毕。如果某步失败，报告错误即可。"
+  }
+}

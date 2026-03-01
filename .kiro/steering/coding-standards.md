@@ -2,10 +2,15 @@
 inclusion: manual
 priority: P2
 keywords: [编码, 命名, Region, 代码组织, EventBus]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-02-12
 ---
 
 # Sunset 项目编码规范
+
+## 🔴 文档写入规范
+
+> **此规则已提升为全局规则，权威定义在 `rules.md` 的"文档写入规范"章节。**
+> **迁移日期：2026-02-11，原因：文档写入是高频操作，必须默认加载。**
 
 ## 命名规范
 
@@ -93,6 +98,11 @@ public class ExampleClass : MonoBehaviour
 ## 事件系统规范
 
 ### 使用 EventBus（推荐）
+
+> ⚠️ **实施状态：框架已就绪，业务代码尚未接入**
+> EventBus 框架代码在 `Core/Events/` 中已完整实现，但当前业务代码仍使用静态事件。
+> 新功能应优先使用 EventBus，逐步迁移。
+
 ```csharp
 using Sunset.Events;
 
@@ -118,6 +128,10 @@ EventBus.Publish(new DayChangedEvent { Year = 1, SeasonDay = 5, TotalDays = 35 }
 
 ## 服务定位器规范
 
+> ⚠️ **实施状态：框架已就绪，业务代码尚未接入**
+> ServiceLocator 框架代码在 `Core/Services/` 中已完整实现，但当前业务代码仍使用 FindFirstObjectByType 或直接引用。
+> 新功能应优先使用 ServiceLocator，逐步迁移。
+
 ### 注册服务
 ```csharp
 using Sunset.Services;
@@ -139,6 +153,10 @@ if (ServiceLocator.TryGet<ITimeService>(out var service))
 ```
 
 ## 对象池规范
+
+> ⚠️ **实施状态：框架已就绪，业务代码尚未接入**
+> PoolManager 框架代码在 `Core/Pool/` 中已完整实现，但当前业务代码仍使用 Instantiate/Destroy。
+> 频繁创建/销毁的对象（掉落物、粒子等）应优先迁移到对象池。
 
 ### 实现 IPoolable 接口
 ```csharp
@@ -274,27 +292,79 @@ void OnHourChanged(int hour)
 
 ## 文件夹结构
 
+> **实际目录为 `Assets/YYY_Scripts/`，以下为当前结构：**
+
 ```
-Assets/Scripts/
+Assets/YYY_Scripts/
 ├── Core/               # 核心框架
-│   ├── Events/         # 事件系统
-│   ├── Services/       # 服务定位器
-│   └── Pool/           # 对象池
+│   ├── Events/         # 事件系统 (EventBus) ✅ 已实施
+│   ├── Services/       # 服务定位器 ⚠️ 部分实施
+│   └── Pool/           # 对象池 ⚠️ 部分实施
 ├── Service/            # 游戏服务
-│   ├── Time/           # 时间系统
-│   ├── Weather/        # 天气系统
+│   ├── Camera/         # 摄像头系统
+│   ├── Crafting/       # 合成系统
+│   ├── Equipment/      # 装备系统
 │   ├── Inventory/      # 背包系统
-│   └── Navigation/     # 导航系统
+│   ├── Navigation/     # 导航系统
+│   ├── NPC/            # NPC 服务
+│   ├── Placement/      # 放置系统
+│   ├── Player/         # 玩家服务
+│   └── Rendering/      # 渲染工具
 ├── Controller/         # 控制器
 │   ├── Player/         # 玩家控制
-│   ├── NPC/            # NPC控制
+│   ├── NPC/            # NPC 控制
 │   └── Input/          # 输入管理
 ├── Data/               # 数据定义
-│   ├── Items/          # 物品数据
+│   ├── Items/          # 物品数据 (ItemData, ToolData, WeaponData, SeedData, CropData)
 │   ├── Enums/          # 枚举定义
-│   └── Database/       # 数据库
-├── UI/                 # UI系统
+│   ├── Database/       # 数据库
+│   ├── Recipes/        # 配方
+│   └── Core/           # 核心数据 (SaveDataDTOs, DynamicObjectFactory, PersistentObjectRegistry)
+├── Anim/               # 动画控制
+├── Combat/             # 战斗系统
+├── Effects/            # 特效
+├── Events/             # 事件定义
 ├── Farm/               # 农田系统
+├── Interfaces/         # 接口定义
+├── UI/                 # UI 系统
 ├── World/              # 世界系统
 └── Utils/              # 工具类
 ```
+
+
+## 🔴 编辑器交互规范：Tag/Layer 多选下拉框（全局规则）
+
+> **此规则适用于所有需要 Tag/Layer 多选的组件，不仅限于 UI 系统！**
+> **2026-02-12 从 rules.md 迁移至此（Phase 4.0 精简）**
+
+**所有涉及 Tag 或 Layer 多选的字段，必须使用 `NavGrid2DEditor.DrawTagMask` 方法！**
+
+### 正确做法
+```csharp
+// 在 TagMaskEditors.cs 中添加 CustomEditor
+[CustomEditor(typeof(YourComponent))]
+public class YourComponentEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
+        DrawPropertiesExcluding(serializedObject, "m_Script", "yourTagsField");
+        NavGrid2DEditor.DrawTagMask(serializedObject.FindProperty("yourTagsField"), "Your Tags Label");
+        serializedObject.ApplyModifiedProperties();
+    }
+}
+```
+
+### 已使用此规范的组件
+- `NavGrid2D` - obstacleTags（导航系统）
+- `GameInputManager` - interactableTags（输入系统）
+- `AutoPickupService` - pickupTags（拾取系统）
+- `PlacementManager` / `PlacementManagerV2` - obstacleTags（建造系统）
+
+### 禁止的做法
+- ❌ 手动输入字符串数组（默认 Inspector）
+- ❌ 使用勾选框列表
+- ❌ 使用 ReorderableList
+
+### 标准实现文件
+- `Assets/YYY_Scripts/Utils/Editor/TagMaskEditors.cs` - 所有 Tag 多选编辑器集中在此文件

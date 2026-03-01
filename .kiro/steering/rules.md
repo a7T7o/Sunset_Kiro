@@ -2,8 +2,8 @@
 inclusion: always
 priority: P0
 isCanonical: true
-canonicalDomain: [开发禁止事项, 全局编辑器规范, API规范, Tag/Layer多选规范]
-lastUpdated: 2025-01-09
+canonicalDomain: [开发禁止事项, API规范, 核心语言规则, 核心工作区禁令]
+lastUpdated: 2026-02-16
 ---
 
 # 开发规则与禁止事项
@@ -14,30 +14,40 @@ lastUpdated: 2025-01-09
 - **玩家位置 = 玩家 Collider 的中心（bounds.center）**
 - **绝对不是屏幕中心、Camera 中心、Sprite 中心**
 - 所有涉及玩家位置的计算都必须使用 `playerCollider.bounds.center`
-- 这是最基础的规则，违反此规则会导致所有位置相关功能失效
-- **用户原话**："人物是以其collider为中心，而非屏幕Camera为中心的，请你严肃规范！"
 
 ### 2. 树木碰撞体只覆盖树根（严重错误来源）
 - **树木的 PolygonCollider2D 只覆盖树根部分**
-- **不是整个树冠/树干**
 - 碰撞体用途：物理碰撞、导航阻挡
-- **遮挡检测不能依赖碰撞体**，因为碰撞体不覆盖树冠
-- **用户原话**："碰撞体仅仅只是树根"
+- **遮挡检测不能依赖碰撞体**
 
 ### 3. 遮挡系统与碰撞体无关（严重错误来源）
 - 遮挡检测基于 **Sprite Bounds**（矩形包围盒）
-- 精确遮挡检测需要基于 **Sprite 的实际可见像素区域**
 - **不能使用 PolygonCollider2D 进行遮挡检测**
-- **用户原话**："我们最开始的设计完全就和碰撞体无关"
 
 ### 4. 先设计后实现
 - 所有修改必须先提交设计方案
 - 用户审核通过后才能修改代码
-- **用户原话**："请你全部重新进行思考，不直接进行更新，而是全盘重新构造详细的需求和设计，我审核通过后才准进行修改代码"
 
 ### 5. 新增并兼容
 - 新增功能不能破坏原有逻辑
 - 修改 bug 时必须保证和原有业务逻辑保持一致
+
+### 6. 代码修改后必须列出修改文件清单
+- **每次完成代码修改后，必须在回复末尾列出所有修改过的文件**
+- 格式：文件名 + 简短说明（只写文件名，不写完整路径）
+- 包括：新建的文件、修改的文件、删除的文件
+
+### 7. 输出完毕标记（压缩检测基础设施）
+- **每次完成所有输出后，必须在回复的最末尾（最后一行）输出标记，标记独占一行**
+- **标记格式**：`【会话N-续N输出完毕】`，与子 memory 编号统一
+  - 示例：`【会话1-续26输出完毕】`
+  - 首次会话无续接时：`【会话1输出完毕】`
+- **编号来源**：唯一根据是当前子工作区的 memory.md，每次获取只从 memory 获取
+  - 无 memory / 无法确定工作区时：使用 `【输出完毕】`（无编号兜底）
+  - 后续从无编号转为有编号（比如迭代中创建了 memory），以 memory 为主
+- **无例外**：无论回复长短，都必须在最后一行打标记
+- **唯一豁免**：agentStop Hook 记录员响应不打标记
+- 用途：Hook 通过搜索此标记判断是否被压缩，并从标记提取编号用于快照命名和 memory 记录
 
 ## 绝对禁止事项
 
@@ -49,12 +59,10 @@ lastUpdated: 2025-01-09
 
 ### 2. 忽视项目整体设计
 - 必须结合项目的整体设计（多层级+标签分类、Sorting Layer 等）
-- 测试点：如果原功能是"滚轮切换显示红框"，修改后必须仍然显示红框
 
 ### 3. 错误的坐标/层级处理
 - 中心点问题：使用 Player 的 Collider 中心，不是摄像机/屏幕中心
 - 图层问题：根据点击区域的 Sorting Layer 创建物体，不是 Default
-- 模板对象：创建在 UI 中心（场景外），不是 Systems 下（场景内可拾取位置）
 
 ### 4. 混淆碰撞体用途
 - 树木碰撞体：仅用于物理碰撞和导航阻挡，不用于遮挡检测
@@ -63,7 +71,6 @@ lastUpdated: 2025-01-09
 
 ## Unity 6 API 更新
 
-### 弃用 API
 ```csharp
 // ❌ 弃用
 collider.usedByComposite = true;
@@ -75,157 +82,123 @@ FindObjectsByType<T>(FindObjectsSortMode.None);
 FindFirstObjectByType<T>();
 ```
 
-## 编辑器交互规范
+## 文档写入规范
 
-### 🔴🔴🔴 Tag/Layer 多选下拉框（最高优先级 - 全局规则）🔴🔴🔴
+- fsWrite 首次创建文件：建议不超过 150 行
+- fsAppend 追加内容：每次不超过 150 行
+- 超过 200 行的内容必须分段写入
+- 不要在表格或代码块中间断开
+- 如果写入被中断（aborted），从断点用 fsAppend 继续
 
-> **此规则适用于所有需要 Tag/Layer 多选的组件，不仅限于 UI 系统！**
+### 🔴 写入防护规则（防死循环）
+- **fsAppend 必须提供 text 参数**——调用前先在脑中确认 text 内容非空
+- **连续失败 2 次 → 立即停止重试**，改用 fsWrite 重写整个文件（先 readFile 获取当前内容，拼接新内容后 fsWrite）
+- **禁止对同一文件连续调用 3 次以上失败的写入操作**
+- 失败后的恢复策略：readFile 当前文件 → 确认断点 → fsWrite 完整内容 或 fsAppend 确认 text 非空后重试
 
-**所有涉及 Tag 或 Layer 多选的字段，必须使用 `NavGrid2DEditor.DrawTagMask` 方法！**
+## 语言与沟通
 
-#### 正确做法
-```csharp
-// 在 TagMaskEditors.cs 中添加 CustomEditor
-[CustomEditor(typeof(YourComponent))]
-public class YourComponentEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        serializedObject.Update();
-        // 排除 tags 字段，单独绘制
-        DrawPropertiesExcluding(serializedObject, "m_Script", "yourTagsField");
-        // 使用 NavGrid2DEditor.DrawTagMask 绘制多选下拉框
-        NavGrid2DEditor.DrawTagMask(serializedObject.FindProperty("yourTagsField"), "Your Tags Label");
-        serializedObject.ApplyModifiedProperties();
-    }
-}
-```
+### 核心原则
+- 所有对话和文档使用中文（代码/术语/路径除外）
+- **理解用户意图后直接执行，不要反复确认**——用户已经说清楚的事情不需要再问
+- 简洁明了，直接回答核心，避免冗长解释
+- 保持友好专业的对话氛围，使用"我们"、"咱们"等亲切用语
 
-#### 效果
-- 显示为多选下拉框（MaskField）
-- 列出所有项目中的 Tags
-- 支持多选，显示已选中的 Tags
-- 与 NavGrid2D 的 Obstacle Tags 样式一致
+### 执行前计划
+- 收到消息后，先输出对用户需求的理解与提炼（遇强则强遇弱则弱：输入越复杂理解越详细，输入越简短理解越精简）
+- 只要涉及执行动作（修改文件/创建内容/分析代码等），必须列出执行步骤再开始
+- 纯问答/纯讨论不需要步骤，直接回答
+- 列完步骤后的行为判断：
+  - 直接执行：用户意图明确、步骤无歧义、操作可逆
+  - 等待确认：需求有多种理解方式、涉及方案选择、存在不可逆风险、分析后发现矛盾或遗漏
 
-#### 已使用此规范的组件（跨系统）
-- `NavGrid2D` - obstacleTags（导航系统）
-- `GameInputManager` - interactableTags（输入系统）
-- `AutoPickupService` - pickupTags（拾取系统）
-- `PlacementManager` - obstacleTags（建造系统）
-- `PlacementManagerV2` - obstacleTags（建造系统）
+### 文档语言规范
+- **所有 .kiro/specs/ 下的文档必须使用中文**（requirements/design/tasks/memory 全部中文）
+- **禁止在规划文档中使用英文描述**
+- 唯一例外：代码片段、类名、方法名、文件路径
 
-#### ❌ 禁止的做法
-- 手动输入字符串数组（默认 Inspector）
-- 使用勾选框列表
-- 使用 ReorderableList（太复杂）
-- 任何其他自定义 UI
+### 与中文用户对话
+- 引用英文文档时必须主动用中文转述，不得直接输出大段英文
+- 引用 archive 目录下的英文文档时，优先引用"中文概述"章节
+- 首次出现的英文术语必须附上中文解释（如 `ScriptableObject`（可编程对象））
+- 禁止假设用户能理解英文技术文档
 
-#### 标准实现文件
-- `Assets/YYY_Scripts/Utils/Editor/TagMaskEditors.cs` - 所有 Tag 多选编辑器集中在此文件
+### 方案讨论流程
+1. **确认需求** - 理解用户想要什么
+2. **提出方案** - 用文字描述解决思路（不展示代码）
+3. **解释原理** - 说明为什么这样做
+4. **等待反馈** - 确认用户理解并同意
+5. **实施代码** - 只有在用户确认后才编写代码
 
-### Tag/Layer 选择器（单选场景）
-```csharp
-// ✅ 正确做法：ReorderableList + Tag Popup 下拉框
-tagsList = new ReorderableList(serializedObject, tagsProperty, true, true, true, true);
-tagsList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
-{
-    int newIndex = EditorGUI.Popup(rect, currentIndex, allTags);
-    element.stringValue = allTags[newIndex];
-};
+### 何时展示代码
+仅在以下情况展示代码：
+- 用户明确要求"给出代码"或"展示代码"
+- 用户要求"核心代码"或"代码实现"
+- 讨论具体的代码问题或 bug
+- 需要展示具体的 API 用法
 
-// ❌ 错误做法1：手动输入字符串数组
-[SerializeField] private string[] tags;
+### 技术决策
+- 遇到技术决策时选择最稳妥的方案，多次迭代优化即可
+- 遇到错误时先用中文解释问题、说明原因、提供解决思路
 
-// ❌ 错误做法2：勾选框列表
-```
+### 一条龙模式
+- 用户说"一条龙/直接全部完成"时 → 加载 `.kiro/steering/communication.md` 获取完整流程
 
-## ScriptableObject 访问规范
+## 锐评处理
 
-### ItemDatabase 访问
-```csharp
-// ✅ 正确：从已有引用的 MonoBehaviour 获取
-if (inventory != null)
-    database = inventory.Database;
+- 遇到锐评相关内容（关键词：锐评、阅读锐评、审查，或文件路径含"锐评"）→ 加载 `.kiro/steering/code-reaper-review.md` 获取完整处理规范
+- 核心原则：严肃对待、独立验证、不盲从。每条技术声明必须用代码事实核查
+- 路径 A/B（认同度高）→ 一句话说明后直接执行
+- 路径 C（重大异议）→ 必须创建审视报告文件，对话中只输出：路径判断一句话 + 异议要点 3-5 行 + 文件路径
 
-// ❌ 错误：永远返回 null
-database = FindFirstObjectByType<ItemDatabase>();
-```
+## 工作区记忆（核心规则）
 
-## 事件系统规范
+### 绝对禁令
+- 禁止覆盖任何文档（requirements/design/tasks/memory 只允许新增）
+- 禁止删除任何文档
+- memory.md 只允许追加新会话记录，不允许修改历史（归档重命名除外）
+- tasks.md 中所有任务都是必须完成的，禁止使用 `*` 标记可选
 
-### 时间事件订阅
-```csharp
-// ✅ 正确：使用静态事件
-TimeManager.OnDayChanged += OnDayChanged;
+### Memory 更新规则
+- **所有对话都必须记录到 memory**——无论是代码修改、方案讨论、锐评审视还是纯问答
+- 每次修改代码后必须在 memory 中记录修改的文件
+- **更新顺序：先子后主**——先更新子工作区 memory，再更新主工作区 memory
+- 主 memory 单条记录严格限制 3-5 行（一句话主题 + 一句话结论 + 关键文件/决策）
+- 子 memory 记录详细内容（用户需求、完成任务、修改文件、解决方案、遗留问题）
+- 压缩场景例外：只更新子 memory + 创建继承快照，跳过主 memory
 
-// ❌ 错误：使用实例方法
-timeManager.OnDayChanged += OnDayChanged;
-```
+### Memory 分卷制
+- **活跃卷始终是 `memory.md`**，归档时旧卷重命名为 `memory_0.md`、`memory_1.md`...
+- 主 memory 单卷上限 200 行，子 memory 单卷上限 300 行
+- 分卷时机：写入前检查行数，超限则将当前 memory.md 归档为 memory_N.md，新建 memory.md 带前情提要
+- 绝不在一条记录中间截断，超限判断是"下一条写入前检查"
+- 新卷前情提要：主 memory 约 60-80 行（模块概述+状态+架构决策+文件索引+上一条回顾），子 memory 约 30-50 行（模块概述+状态+上一条回顾）
+- 归档操作（memory.md → memory_N.md）不算"修改历史"，是允许的
+- 查找历史记录时：当前 memory.md 找不到 → 按编号从大到小读取 memory_N.md
 
-### 导航网格刷新
-```csharp
-// ✅ 正确：使用全局静态事件
-NavGrid2D.OnRequestGridRefresh?.Invoke();
-```
+### 工作区结构
+- 工作区命名：中文，格式 `{编号}_{功能名称}`
+- 每个工作区必须有 memory.md（无论嵌套多深）
+- 详细结构规范：`.kiro/steering/workspace-memory.md`（参考文档，非运行时依赖）
 
-## 动画系统规范
+## 代办管理
 
-### 帧同步
-```csharp
-// ✅ 正确：使用帧索引硬锁
-toolAnimator.Play(targetHash, 0, toolNormalized);
-toolAnimator.Update(0);
+### 存储位置
+- 根目录：`.kiro/specs/000_代办/`
+- 层级结构完全照抄 specs 工作区层级
 
-// ❌ 错误：仅依赖时间对齐
-toolAnimator.Play(targetHash, 0, playerNormalizedTime);
-```
+### 文件命名
+- 主代办：`TD_000_主工作区名.md`（000 表示最高优先级）
+- 子代办：`TD_子工作区全名.md`
+- 示例：
+  - `.kiro/specs/000_代办/农田系统/TD_000_农田系统.md`（主代办）
+  - `.kiro/specs/000_代办/农田系统/TD_10.0.2农BUG农SO.md`（子代办）
 
-### 动画 ID 获取
-```csharp
-// ✅ 正确：使用 GetAnimationKeyId()
-int animId = toolData.GetAnimationKeyId();
+### TD 文件格式
+- 前情提要：来源工作区、背景缘由
+- 待办表格：编号、描述、优先级、来源会话、状态、分析/见解
+- 主代办汇总该工作区所有子代办的关键待办
 
-// ❌ 错误：直接使用 itemID
-int animId = toolData.itemID;
-```
-
-## 性能规范
-
-### 导航网格
-- 推荐 cellSize: 0.5f
-- 推荐场景大小: 100x80（~150ms 重建）
-- 延迟刷新: 0.2 秒合并请求
-
-### 遮挡检测
-- 使用 `Bounds.Intersects` 而非 `OverlapPoint`
-- 检测间隔: 0.1 秒
-- 检测半径: 8 单位
-
-## 命名规范
-
-### 动画资产
-- 状态名：`{ActionType}_{Direction}_Clip_{itemId}_{quality}`
-- 控制器：`{ActionType}_Controller_{itemId}_{itemName}.controller`
-
-### 物品 ID
-- 工具：0XXX
-- 种子：10XX
-- 作物：11XX
-- 材料：3XXX
-- 食品：5XXX
-
-### 标签
-- 树木：`Tree`（单数）
-- 建筑：`Building`
-- 岩石：`Rock`
-
-## 调试规范
-
-### 日志输出
-- 使用 `[组件名]` 前缀
-- 生产环境关闭详细日志
-- 使用 `enableDetailedDebug` 开关控制
-
-### 可视化调试
-- 使用 Gizmos 显示检测范围
-- 提供 Inspector 开关控制显示
+### 触发条件
+- 对话中出现"后续"关键词 → 宁可错杀不可放过，立即记录到对应 TD 文件
+- 出现"暂不处理"/"搁置"/"推迟"/"待定" → 同样触发记录

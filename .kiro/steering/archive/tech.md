@@ -2,14 +2,14 @@
 inclusion: manual
 priority: P3
 keywords: [技术栈, Unity, 包管理, 架构]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 archivedFrom: .kiro/steering/tech.md
-archivedDate: 2025-01-09
+archivedDate: 2026-01-09
 ---
 
 ## 中文概述（面向开发者本人）
 
-- **最后更新**：2025-01-09
+- **最后更新**：2026-01-09
 - **引擎版本**：Unity 6 (6000.0.62f1)
 - **平台**：Windows
 - **脚本语言**：C# (.NET Standard 2.1)

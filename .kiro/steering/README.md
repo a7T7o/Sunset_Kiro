@@ -1,3 +1,10 @@
+---
+inclusion: manual
+priority: P2
+keywords: [索引, 规则列表, Steering目录]
+lastUpdated: 2026-02-12
+---
+
 # Steering 规则索引
 
 > **本文档是所有 Steering 规则文件的索引，用于快速查找和了解各规则的用途。**
@@ -9,8 +16,28 @@
 | 加载类型 | 说明 | 配置方式 |
 |---------|------|---------|
 | `always` | 每次对话自动加载 | 默认行为，或 `inclusion: always` |
-| `manual` | 需要手动引用 `#规则名` | `inclusion: manual` |
+| `manual` | 手动引用 `#规则名` 或 AI 智能加载 | `inclusion: manual` |
 | `fileMatch` | 读取匹配文件时自动加载 | `inclusion: fileMatch` + `fileMatchPattern` |
+
+### 智能加载机制（Phase 4.0/4.1 升级）
+
+P1/P2 规则通过 `smart-assistant.kiro.hook`（promptSubmit Hook）实现智能加载：
+- AI 分析用户输入中的关键词，自动用 `readFile` 加载匹配的规则文件
+- 无需用户手动输入 `#rulename`，AI 静默完成
+- 用户仍可通过 `#rulename` 手动加载（两种方式并存）
+- 默认加载仅 2 个文件（rules.md + 000-context-recovery.md），其余按需加载
+
+---
+
+## P-1 - 最高优先级规则（必须首先执行）
+
+**这些规则的优先级高于所有其他规则，必须在响应用户之前首先检查和执行。**
+
+| 文件 | 用途 | 关键内容 |
+|------|------|---------|
+| `000-context-recovery.md` | 上下文恢复检查 | 继承对话时必须先回顾任务，等用户确认后再工作 |
+
+**Token 消耗**: ~500 tokens
 
 ---
 
@@ -20,12 +47,11 @@
 
 | 文件 | 用途 | 关键内容 |
 |------|------|---------|
-| `rules.md` | 开发规则与禁止事项 | 玩家位置、碰撞体用途、遮挡系统、全局编辑器规范 |
-| `layers.md` | 项目层级设计规范 | 楼层结构、Sorting Layers、树木层级、命中检测 |
-| `workspace-memory.md` | 工作区记忆规范 | specs 目录结构、memory.md 规范 |
-| `communication.md` | 沟通规范 | 一条龙模式、语言要求、方案讨论流程 |
+| `rules.md` | 开发规则与禁止事项 | 玩家位置、碰撞体用途、遮挡系统、文档写入规范、沟通规范 |
 
-**Token 消耗**: ~4,000 tokens
+**Token 消耗**: ~2,000 tokens
+
+> ⚠️ Phase 4.0 已将 `layers.md`、`workspace-memory.md`、`communication.md` 降级为 manual，通过 Hook 按需加载。
 
 ---
 
@@ -42,6 +68,11 @@
 | `systems.md` | 核心系统设计规范 | 时间、季节、导航、遮挡 | 开发核心系统功能 |
 | `trees.md` | 树木系统规范 | 树木、树林、砍树 | 开发树木相关功能 |
 | `placeable-items.md` | 可放置物品开发规范 | 放置、树苗、箱子、底部对齐 | 开发可放置物品 |
+| `save-system.md` | 存档系统规则 | 存档、保存、加载、GUID、持久化 | 开发存档相关功能 |
+| `chest-interaction.md` | 箱子/交互系统规则 | 箱子、交互、ChestController、BoxPanel | 开发箱子/交互功能 |
+| `layers.md` | 项目层级设计规范 | 层级、楼层、Sorting | 开发层级相关功能 |
+| `workspace-memory.md` | 工作区记忆规范 | 工作区、memory、新建工作区 | 管理工作区记忆 |
+| `communication.md` | 沟通规范 | 一条龙、直接全部完成 | 一条龙模式 |
 
 **Token 消耗**: ~19,000 tokens（全部加载时）
 
@@ -136,26 +167,33 @@
 ├── README.md                    # 本索引文件
 ├── maintenance-guidelines.md    # 维护安全规范
 │
-├── [P0 - 默认加载]
-│   ├── rules.md
-│   ├── layers.md
-│   ├── workspace-memory.md
-│   └── communication.md
+├── [P-1 - 最高优先级]
+│   └── 000-context-recovery.md  # 上下文恢复检查
 │
-├── [P1 - 手动加载]
+├── [P0 - 默认加载（always）]
+│   └── rules.md                 # 开发规则与禁止事项（含沟通规范）
+│
+├── [P1 - 手动/智能加载（manual）]
 │   ├── animation.md
 │   ├── ui.md
 │   ├── so-design.md
 │   ├── items.md
 │   ├── systems.md
 │   ├── trees.md
-│   └── placeable-items.md
+│   ├── placeable-items.md
+│   ├── save-system.md           # 存档系统规则（Phase 5.0 新建）
+│   ├── chest-interaction.md     # 箱子/交互系统规则（Phase 5.0 新建）
+│   ├── layers.md                # 从 P0 降级（Phase 4.0）
+│   ├── workspace-memory.md      # 从 P0 降级（Phase 4.0）
+│   └── communication.md         # 从 P0 降级（Phase 4.0）
 │
 ├── [P2 - 手动加载]
 │   ├── coding-standards.md
 │   ├── documentation.md
 │   ├── scene-modification-rule.md
-│   └── scene-hierarchy-sync.md
+│   ├── scene-hierarchy-sync.md
+│   ├── code-reaper-review.md
+│   └── debug-logging-standards.md
 │
 └── archive/                     # P3/P4 归档目录
     ├── product.md
@@ -171,8 +209,15 @@
 
 | 日期 | 更新内容 |
 |------|---------|
-| 2025-01-09 | 创建索引文件，实施方案 A |
-| 2025-01-09 | 删除 `context-handoff.md`、`tree-system.md` |
-| 2025-01-09 | 合并游戏数值到 `trees.md`，迁移全局规则到 `rules.md` |
+| 2026-01-09 | 创建索引文件，实施方案 A |
+| 2026-01-09 | 删除 `context-handoff.md`、`tree-system.md` |
+| 2026-01-09 | 合并游戏数值到 `trees.md`，迁移全局规则到 `rules.md` |
 | 2026-01-21 | 新增 `placeable-items.md` 可放置物品开发规范 |
+| 2026-02-01 | 新增 `context-recovery.md` 上下文恢复规范 |
+| 2026-02-01 | 重命名为 `000-context-recovery.md` 并设为 P-1 优先级 |
+| 2026-02-06 | `workspace-memory.md` 新增代码文件追踪规范 |
+| 2026-02-11 | `rules.md` 新增文档写入规范、智能规则加载机制 |
+| 2026-02-12 | Phase 4.0：`layers.md`/`communication.md`/`workspace-memory.md` 降级为 manual |
+| 2026-02-12 | Phase 4.1：创建 smart-assistant + memory-update-check Hook |
+| 2026-02-12 | Phase 5.0：新建 `save-system.md`、`chest-interaction.md`；更新索引 |
 

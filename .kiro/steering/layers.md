@@ -1,9 +1,9 @@
 ---
-inclusion: always
+inclusion: manual
 priority: P0
 isCanonical: true
 canonicalDomain: [Sorting Layers, 楼层结构, 树木层级结构, 场景层级, 命中检测]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-02-12
 ---
 
 # 项目层级设计规范

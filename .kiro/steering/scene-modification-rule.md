@@ -2,7 +2,7 @@
 inclusion: manual
 priority: P2
 keywords: [场景, 组件, 修改, 预制体, Inspector]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 ---
 
 # 场景/组件修改规则（最高优先级）

@@ -2,7 +2,7 @@
 inclusion: manual
 priority: P2
 keywords: [文档, 日志, 记录, 技术文档, 交接]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 ---
 
 # 技术文档编写规范

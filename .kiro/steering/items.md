@@ -2,43 +2,26 @@
 inclusion: manual
 priority: P1
 keywords: [物品, 背包, 堆叠, ItemStack, Inventory, 品质]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-02-11
 ---
 
 # 物品系统规范
 
 ## 物品ID分配规则
 
+> **物品 ID 分配的权威来源是 `.kiro/specs/SO设计系统与工具/ID分配规范.md`。**
+> **`so-design.md` 中有简要摘要，此处为极简版。**
+
 ```
-0XXX: 工具和武器
-    00XX: 农业工具 (锄头、水壶、镰刀、钓鱼竿)
-    01XX: 采集工具 (镐子、斧头)
-    02XX: 武器 (剑、弓、法杖)
-
-1XXX: 种植类
-    10XX: 种子
-    11XX: 作物
-
-2XXX: 动物产品
-    20XX: 畜牧产品
-    21XX: 肉类
-    22XX: 水产
-
-3XXX: 矿物和材料
-    30XX: 矿石
-    31XX: 锭
-    32XX: 自然材料
-    33XX: 怪物掉落
-
-4XXX: 消耗品
-    40XX: 药水
-
-5XXX: 食品
-    50XX: 简单料理
-    51XX: 高级料理
-
+0XXX: 工具和武器 (00XX农具, 01XX采集, 02XX武器)
+1XXX: 种植与放置类 (10XX种子, 11XX农作物[含枯萎], 12XX树苗, 13XX工作台, 14XX存储/钥匙锁, 15XX交互展示, 16XX简单事件)
+2XXX: 动物产品（预留）
+3XXX: 矿物和材料 (30XX矿石, 31XX锭, 32XX自然, 33XX怪物)
+4XXX: 消耗品 (40XX药水)
+5XXX: 食品 (50XX简单, 51XX高级)
 6XXX: 家具
 7XXX: 特殊物品
+8XXX: 装备（EquipmentData）
 ```
 
 ## 数据结构
@@ -88,19 +71,18 @@ Vector2Int harvestAmountRange; // 收获数量范围
 
 ## 品质系统
 
-### 品质等级
-- Normal (普通)
-- Copper (铜星)
-- Silver (银星)
-- Gold (金星)
-- Iridium (彩星)
+> **品质定义的权威来源是 `so-design.md`，此处保持同步。**
 
-### 价格倍率
-- Normal: 1.0
-- Copper: 1.25
-- Silver: 1.5
-- Gold: 2.0
-- Iridium: 2.5
+### 品质等级（ItemQuality 枚举）
+
+| 品质 | 值 | 价格倍率 | 星星颜色 |
+|------|-----|---------|---------|
+| Normal | 0 | ×1.0 | 无星星 |
+| Rare | 1 | ×1.25 | 蓝色 |
+| Epic | 2 | ×2.0 | 紫色 |
+| Legendary | 3 | ×3.25 | 金色 |
+
+> 价格计算后**向上取整** (`Mathf.CeilToInt`)
 
 ### 品质规则
 - 品质不改变物品外观，只在 UI 显示星星

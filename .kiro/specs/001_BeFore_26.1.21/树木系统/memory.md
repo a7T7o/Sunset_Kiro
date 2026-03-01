@@ -79,11 +79,11 @@ TreeControllerV2 树木控制器系统，包含：
 - 内容：季节事件暂停
 - 详情：`phases/phase3-weather-interactions.md`
 
-### 会话 7 - 2025-01-04
+### 会话 7 - 2026-01-04
 - 内容：调试开关移至 TimeManager
 - 详情：`phases/phase3-weather-interactions.md`
 
-### 会话 8 - 2025-01-04
+### 会话 8 - 2026-01-04
 - 内容：季节渐变第28天BUG修复
 - 详情：`phases/phase2-season-logic-fixes.md`
 

@@ -101,3 +101,20 @@
 - ✅ 跳过禁用列表
 - ✅ 容量溢出处理
 - ✅ 旧版数据自动迁移
+
+### 会话 2 - 2026-02-15
+
+**用户需求**:
+> InventoryBootstrapEditor 中删除按钮（物品条目的叉号和列表的叉号）点击无效且持续报错
+
+**问题分析**:
+- 错误：`Retrieving array element that was out of bounds` + `NullReferenceException`
+- 根因：IMGUI 循环中执行 `DeleteArrayElementAtIndex` 后，数组大小立即改变，但 for 循环仍用旧的 `arraySize` 继续遍历，导致后续索引越界
+- 影响范围：物品条目删除按钮（DrawItemEntry）和列表删除按钮（DrawListHeader）
+
+**修复方案**:
+- 在两处 `DeleteArrayElementAtIndex` 调用后，立即 `ApplyModifiedProperties()` + `GUIUtility.ExitGUI()` 中断当前帧绘制
+- 这是 Unity IMGUI 中修改集合后的标准处理模式
+
+**修改文件**:
+- `Assets/Editor/InventoryBootstrapEditor.cs` - 修复删除按钮越界 bug（DrawItemEntry + DrawListHeader）

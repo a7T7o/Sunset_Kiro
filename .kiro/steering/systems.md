@@ -2,7 +2,7 @@
 inclusion: manual
 priority: P1
 keywords: [时间, 季节, 导航, 遮挡, NavGrid, TimeManager, Order]
-lastUpdated: 2025-01-09
+lastUpdated: 2026-01-09
 ---
 
 # 核心系统设计规范
